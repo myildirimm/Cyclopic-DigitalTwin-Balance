@@ -9,8 +9,10 @@ For more information about scenario:
 https://youtu.be/Wv4PSU877OA 
 
 TO DO:
+  * Add load (box) above base.
   * Make code functional.
-  * Improve connections
+  * Improve connections(wheel-shaft connection misalignment)
+  * Adding load vector.
   * Implement RL (PPO).
   * Improve visual components
 
