@@ -4,12 +4,10 @@ import math
 # Initialize Pygame
 pygame.init()
 
-
-
 # Set up the display
 width, height = 800, 600
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption('Tire with Oscillating Rim and L-Shaft')
+pygame.display.set_caption('Cyclopic Balance')
 
 # Colors
 BLACK = (0, 0, 0)
@@ -34,6 +32,11 @@ rotation_speed_2 = 0.5  # Degrees per frame
 rim_image_path = 'rim_1.png'  # Replace with your image file path
 rim_image = pygame.image.load(rim_image_path)
 rim_image = pygame.transform.scale(rim_image, (2 * rim_radius, 2 * rim_radius))
+
+# Load the rim image
+tire_image_path = 'tire_1.png'  # Replace with your image file path
+tire_image = pygame.image.load(tire_image_path)
+tire_image = pygame.transform.scale(tire_image, (2 * tire_radius, 2 * tire_radius))
 
 # Shaft properties
 shaft_length = 120
@@ -62,9 +65,29 @@ while running:
     # Fill the screen
     screen.fill((255, 255, 255))
 
-    # Draw the tire (outer circle)
-    pygame.draw.circle(screen, BLACK, tire_pos_1, tire_radius, 5)
-    pygame.draw.circle(screen, BLACK, tire_pos_2, tire_radius, 5)
+    shaft_base_pos_1 = (tire_pos_1[0] - (math.cos(math.radians((rim_angle_1))) * rim_radius)+10, tire_pos_1[1] + (math.sin(math.radians((rim_angle_1))) * rim_radius))
+    shaft_base_pos_2 = (tire_pos_2[0] - (math.cos(math.radians((rim_angle_2))) * rim_radius)+10, tire_pos_2[1] + (math.sin(math.radians((rim_angle_2))) * rim_radius))
+
+    shaft_end_pos_1 = (shaft_base_pos_1[0],shaft_base_pos_1[1]- shaft_length)
+    shaft_end_pos_2 = (shaft_base_pos_2[0],shaft_base_pos_2[1]- shaft_length)
+
+    # Draw the shaft
+    shaft_rect_1 = pygame.Rect(shaft_base_pos_1[0] - shaft_width // 2,
+                             shaft_base_pos_1[1] - shaft_length,
+                             shaft_width,
+                             shaft_length)
+    shaft_rect_2 = pygame.Rect(shaft_base_pos_2[0] - shaft_width // 2,
+                             shaft_base_pos_2[1] - shaft_length,
+                             shaft_width,
+                             shaft_length)
+    pygame.draw.rect(screen, RED, shaft_rect_1)
+    pygame.draw.rect(screen, RED, shaft_rect_2)
+
+    # Blit the tire image onto the screen at the tire positions
+    tire_rect_1 = tire_image.get_rect(center=tire_pos_1)
+    tire_rect_2 = tire_image.get_rect(center=tire_pos_2)
+    screen.blit(tire_image, tire_rect_1.topleft)
+    screen.blit(tire_image, tire_rect_2.topleft)
 
     # Rotate the rim
     if rotate_clockwise:
@@ -100,34 +123,21 @@ while running:
     # Get the new rect for the rotated rim to blit at the correct position
     rotated_rect_2 = rotated_rim_2.get_rect(center=tire_pos_2)
 
-    # Blit the rotated rim onto the screen
-    screen.blit(rotated_rim_1, rotated_rect_1.topleft)
-    screen.blit(rotated_rim_2, rotated_rect_2.topleft)
 
 
-    shaft_base_pos_1 = (tire_pos_1[0] - (math.cos(math.radians((rim_angle_1))) * rim_radius)+10, tire_pos_1[1] + (math.sin(math.radians((rim_angle_1))) * rim_radius))
-    shaft_base_pos_2 = (tire_pos_2[0] - (math.cos(math.radians((rim_angle_2))) * rim_radius)+10, tire_pos_2[1] + (math.sin(math.radians((rim_angle_2))) * rim_radius))
 
-    shaft_end_pos_1 = (shaft_base_pos_1[0],shaft_base_pos_1[1]- shaft_length)
-    shaft_end_pos_2 = (shaft_base_pos_2[0],shaft_base_pos_2[1]- shaft_length)
 
-    # Draw the shaft
-    shaft_rect_1 = pygame.Rect(shaft_base_pos_1[0] - shaft_width // 2,
-                             shaft_base_pos_1[1] - shaft_length,
-                             shaft_width,
-                             shaft_length)
-    shaft_rect_2 = pygame.Rect(shaft_base_pos_2[0] - shaft_width // 2,
-                             shaft_base_pos_2[1] - shaft_length,
-                             shaft_width,
-                             shaft_length)
+    
     base_rect = pygame.Rect(shaft_end_pos_1[0],
                              shaft_end_pos_1[1] - base_width,
                              base_length,
                              base_width )
     pygame.draw.line(screen,YELLOW, (shaft_end_pos_1[0]- shaft_width/2,
                              shaft_end_pos_1[1]-base_width/2 ), (shaft_base_pos_2[0]+shaft_width/2,shaft_base_pos_2[1]- shaft_length-base_width/2),20)
-    pygame.draw.rect(screen, RED, shaft_rect_1)
-    pygame.draw.rect(screen, RED, shaft_rect_2)
+
+    # Blit the rotated rim onto the screen
+    screen.blit(rotated_rim_1, rotated_rect_1.topleft)
+    screen.blit(rotated_rim_2, rotated_rect_2.topleft)
     #pygame.draw.rect(screen, YELLOW, base_rect)
     # Update the display
     pygame.display.flip()
