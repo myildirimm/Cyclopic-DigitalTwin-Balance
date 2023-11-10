@@ -13,3 +13,7 @@ TO DO:
   * Improve connections
   * Implement RL (PPO).
   * Improve visual components
+
+
+Requirements:
+ - pygame
