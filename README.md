@@ -18,4 +18,4 @@ TO DO:
 
 
 Requirements:
- - pygame
+ - Pygame
