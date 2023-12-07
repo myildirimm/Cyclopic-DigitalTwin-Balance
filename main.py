@@ -2,7 +2,7 @@ import pygame
 import math
 import random
 from vehicle_config import *
-
+from DQN import DQAgent
 from rl_agent import RLAgent
 
 # Initialize Pygame
@@ -89,7 +89,26 @@ while running:
             rim_angle_2 -= rotation_speed_2
 
 
+    # Update environment state
+    state = {
+        'acceleration': acceleration,
+        'rim_angle_1': rim_angle_1,
+        'rim_angle_2': rim_angle_2,
+        'resultant_angle': calculate_resultant_angle()  # Placeholder function
+    }
+
+
+    # Get action from RL agent
     action = agent.choose_action(state)
+
+    # Apply the action to the rims (placeholder logic)
+    # action could be a tuple like (change_in_rim_angle_1, change_in_rim_angle_2)
+    rim_angle_1 += action[0]
+    rim_angle_2 += action[1]
+
+     # Calculate reward (placeholder logic)
+    reward = calculate_reward(state)  # Function to calculate reward based on the state
+
     next_state, reward, done = env.step(action)
     agent.learn(state, action, reward, next_state)
 
