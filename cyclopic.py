@@ -90,7 +90,6 @@ while running:
     # Fill the screen
     screen.fill((255, 255, 255))
  
-
     shaft_base_pos_1 = (tire_pos_1[0] - (math.cos(math.radians((rim_angle_1))) * rim_radius)+10, tire_pos_1[1] + (math.sin(math.radians((rim_angle_1))) * rim_radius))
     shaft_base_pos_2 = (tire_pos_2[0] - (math.cos(math.radians((rim_angle_2))) * rim_radius)+10, tire_pos_2[1] + (math.sin(math.radians((rim_angle_2))) * rim_radius))
 
@@ -170,26 +169,36 @@ while running:
     box_surface.fill(YELLOW)  # Fill the surface with the box color
 
     # Rotate the box surface
-    rotated_box = pygame.transform.rotate(box_surface, -base_plate_angle)  # Negative angle for correct rotation direction
+    rotated_box = pygame.transform.rotate(box_surface, - base_plate_angle)  # Negative angle for correct rotation direction
 
     # Calculate the new position for the rotated box
     box_center_x = random_x # (shaft_end_pos_1[0] + shaft_end_pos_2[0]) / 2
     # Adjust the y-position to align the bottom of the box with the top of the platform
     # Consider the height of the rotated box which might have changed due to rotation
-    rotated_box_height = rotated_box.get_height()
-    box_center_y = shaft_end_pos_1[1] - base_width - rotated_box_height / 2
+    #rotated_box_height = rotated_box.get_height()
+    #box_center_y = shaft_end_pos_1[1] - base_width - rotated_box_height / 2
+    # The y-position needs to be adjusted so the bottom of the box aligns with the top of the platform
+    # Find the bottom of the rotated box
+    rotated_box_rect = rotated_box.get_rect(center=(box_center_x, shaft_end_pos_1[1] - base_width))
+    box_bottom_y = rotated_box_rect.bottom
+
+    # Adjust y-position so the bottom of the box aligns with the top of the platform
+    box_center_y = shaft_end_pos_1[1] - base_width - (rotated_box.get_height() / 2)
+
+    # Update the rect for proper positioning
     rotated_box_rect = rotated_box.get_rect(center=(box_center_x, box_center_y))
 
+    rotated_box_rect = rotated_box.get_rect(center=(box_center_x, box_center_y))
 
+    """
     # Position the box in the middle of the base
     mid_base_x = (shaft_base_pos_1[0] + shaft_base_pos_2[0]) / 2
     box_position_x = mid_base_x - (box_width // 2)
     box_position_y = shaft_end_pos_1[1] - box_height
-    box_rect = pygame.Rect(box_position_x, box_position_y, box_width, box_height)
-
-
+    box_rect = pygame.Rect(box_position_x, box_position_y, box_width, box_height)"""
     # Blit the rotated box onto the screen
     screen.blit(rotated_box, rotated_box_rect.topleft)   
+    box_position_y = shaft_end_pos_1[1] - box_height
 
 
     # Calculate the angle difference between the two wheels
