@@ -17,10 +17,10 @@ def init_pygame():
     os.environ['SDL_VIDEO_WINDOW_POS'] = f"{x},{y}"
     pygame.init()
 
-    X = 1366
-    Y = 118
+    X = 800  # Width of the window
+    Y = 600  # Height of the window
     ds = pygame.display.set_mode((X, Y))
-    pygame.display.set_caption(str(map_id))
+    pygame.display.set_caption("Cyclopic Balance Test")
 
     return ds
 
