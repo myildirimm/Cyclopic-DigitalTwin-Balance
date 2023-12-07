@@ -3,6 +3,8 @@ import math
 import random
 from vehicle_config import *
 
+from rl_agent import RLAgent
+
 # Initialize Pygame
 pygame.init()
 
@@ -43,7 +45,6 @@ arrowhead_size = 10         # Size of the arrowhead
 # Clock to control frame rate
 clock = pygame.time.Clock()
 
-
 def calculate_angle(p1, p2):
     """Calculate the angle between two points"""
     return math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0]))
@@ -57,7 +58,6 @@ random_x = random.randint(platform_left_edge + box_width_half, platform_right_ed
 # Randomly select an acceleration value within the defined range
 acceleration = random.uniform(min_acceleration, max_acceleration)
 
-
 # Resultant vector properties
 resultant_arrow_width = 5
 resultant_arrowhead_size = 10
@@ -70,6 +70,8 @@ max_rotation = 90
 # Game loop flag
 running = True
 
+# Main game loop
+agent = RLAgent()
 
 while running:
     # Handle events
@@ -86,6 +88,10 @@ while running:
         elif event.key == pygame.K_d:
             rim_angle_2 -= rotation_speed_2
 
+
+    action = agent.choose_action(state)
+    next_state, reward, done = env.step(action)
+    agent.learn(state, action, reward, next_state)
 
     # Fill the screen
     screen.fill((255, 255, 255))
@@ -113,33 +119,11 @@ while running:
                              base_length,
                              base_width )
     
-
     # Blit the tire image onto the screen at the tire positions
     tire_rect_1 = tire_image.get_rect(center=tire_pos_1)
     tire_rect_2 = tire_image.get_rect(center=tire_pos_2)
     screen.blit(tire_image, tire_rect_1.topleft)
     screen.blit(tire_image, tire_rect_2.topleft)
-
-    """
-    # Rotate the rim
-    if rotate_clockwise_1:
-        rim_angle_1 += rotation_speed_1
-        if rim_angle_1 >= max_rotation:
-            rotate_clockwise_1 = False
-    else:
-        rim_angle_1 -= rotation_speed_1
-        if rim_angle_1 <= -max_rotation:
-            rotate_clockwise_1 = True
-
-        # Rotate the rim
-    if rotate_clockwise_2:
-        rim_angle_2 += rotation_speed_2
-        if rim_angle_2 >= max_rotation:
-            rotate_clockwise_2 = False
-    else:
-        rim_angle_2 -= rotation_speed_2
-        if rim_angle_2 <= -max_rotation:
-            rotate_clockwise_2 = True"""
 
     # Create a surface for the rim to rotate
     rim_surface_1 = pygame.Surface((2 * rim_radius, 2 * rim_radius), pygame.SRCALPHA)
@@ -160,7 +144,6 @@ while running:
     pygame.draw.line(screen,METALLIC, (shaft_end_pos_1[0]- shaft_width/2,
                              shaft_end_pos_1[1]-base_width/2 ), (shaft_base_pos_2[0]+shaft_width/2,shaft_base_pos_2[1]- shaft_length-base_width/2),20)
     
-
     # Calculate the angle of the base plate
     base_plate_angle = calculate_angle(shaft_end_pos_1, shaft_end_pos_2)
 
@@ -173,11 +156,7 @@ while running:
 
     # Calculate the new position for the rotated box
     box_center_x = random_x # (shaft_end_pos_1[0] + shaft_end_pos_2[0]) / 2
-    # Adjust the y-position to align the bottom of the box with the top of the platform
-    # Consider the height of the rotated box which might have changed due to rotation
-    #rotated_box_height = rotated_box.get_height()
-    #box_center_y = shaft_end_pos_1[1] - base_width - rotated_box_height / 2
-    # The y-position needs to be adjusted so the bottom of the box aligns with the top of the platform
+
     # Find the bottom of the rotated box
     rotated_box_rect = rotated_box.get_rect(center=(box_center_x, shaft_end_pos_1[1] - base_width))
     box_bottom_y = rotated_box_rect.bottom
@@ -190,16 +169,9 @@ while running:
 
     rotated_box_rect = rotated_box.get_rect(center=(box_center_x, box_center_y))
 
-    """
-    # Position the box in the middle of the base
-    mid_base_x = (shaft_base_pos_1[0] + shaft_base_pos_2[0]) / 2
-    box_position_x = mid_base_x - (box_width // 2)
-    box_position_y = shaft_end_pos_1[1] - box_height
-    box_rect = pygame.Rect(box_position_x, box_position_y, box_width, box_height)"""
     # Blit the rotated box onto the screen
     screen.blit(rotated_box, rotated_box_rect.topleft)   
     box_position_y = shaft_end_pos_1[1] - box_height
-
 
     # Calculate the angle difference between the two wheels
     angle_difference = abs(rim_angle_1 - rim_angle_2)
@@ -207,9 +179,7 @@ while running:
     cog_shift_direction = 1 if rim_angle_1 < rim_angle_2 else -1
     # Calculate the CoG shift
     cog_shift = angle_difference * cog_shift_per_degree * cog_shift_direction
-    # Calculate the CoG position
-    # Center of Gravity (CoG) Arrow
-    # Calculate the CoG arrow base position
+
     cog_arrow_base_x = box_center_x  # CoG arrow base is at the mid-point of the box
     cog_arrow_base_y = box_position_y + box_height // 2  # CoG arrow base is at the vertical center of the box
 
@@ -262,9 +232,6 @@ while running:
     resultant_arrowhead_right = (resultant_arrow_end_x - resultant_arrowhead_size, resultant_arrow_end_y + resultant_arrowhead_size)
     pygame.draw.polygon(screen, BLUE, [(resultant_arrow_end_x, resultant_arrow_end_y), resultant_arrowhead_left, resultant_arrowhead_right])
 
-
-    #pygame.draw.rect(screen, YELLOW, base_rect)
-    # Update the display
     pygame.display.flip()
 
     # Cap the frame rate
