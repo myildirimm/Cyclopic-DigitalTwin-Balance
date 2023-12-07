@@ -76,6 +76,16 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:
+            rim_angle_1 += rotation_speed_1
+        elif event.key == pygame.K_RIGHT:
+            rim_angle_1 -= rotation_speed_1
+        elif event.key == pygame.K_a:
+            rim_angle_2 += rotation_speed_2
+        elif event.key == pygame.K_d:
+            rim_angle_2 -= rotation_speed_2
+
 
     # Fill the screen
     screen.fill((255, 255, 255))
@@ -137,11 +147,10 @@ while running:
 
     # Rotate the rim
     rotated_rim_1 = pygame.transform.rotate(rim_image, rim_angle_1)
-    rotated_rim_2 = pygame.transform.rotate(rim_image, rim_angle_2)
-
     # Get the new rect for the rotated rim to blit at the correct position
     rotated_rect_1 = rotated_rim_1.get_rect(center=tire_pos_1)
 
+    rotated_rim_2 = pygame.transform.rotate(rim_image, rim_angle_2)
     # Get the new rect for the rotated rim to blit at the correct position
     rotated_rect_2 = rotated_rim_2.get_rect(center=tire_pos_2)
 
