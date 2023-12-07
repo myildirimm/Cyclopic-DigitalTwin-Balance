@@ -121,6 +121,7 @@ while running:
     screen.blit(tire_image, tire_rect_1.topleft)
     screen.blit(tire_image, tire_rect_2.topleft)
 
+    """
     # Rotate the rim
     if rotate_clockwise_1:
         rim_angle_1 += rotation_speed_1
@@ -139,7 +140,7 @@ while running:
     else:
         rim_angle_2 -= rotation_speed_2
         if rim_angle_2 <= -max_rotation:
-            rotate_clockwise_2 = True
+            rotate_clockwise_2 = True"""
 
     # Create a surface for the rim to rotate
     rim_surface_1 = pygame.Surface((2 * rim_radius, 2 * rim_radius), pygame.SRCALPHA)
@@ -148,11 +149,14 @@ while running:
     # Rotate the rim
     rotated_rim_1 = pygame.transform.rotate(rim_image, rim_angle_1)
     # Get the new rect for the rotated rim to blit at the correct position
-    rotated_rect_1 = rotated_rim_1.get_rect(center=tire_pos_1)
+    rotated_rim_rect_1 = rotated_rim_1.get_rect(center=tire_pos_1)
 
     rotated_rim_2 = pygame.transform.rotate(rim_image, rim_angle_2)
     # Get the new rect for the rotated rim to blit at the correct position
-    rotated_rect_2 = rotated_rim_2.get_rect(center=tire_pos_2)
+    rotated_rim_rect_2 = rotated_rim_2.get_rect(center=tire_pos_2)
+    # Blit the rotated rim onto the screen
+    screen.blit(rotated_rim_1, rotated_rim_rect_1.topleft)
+    screen.blit(rotated_rim_2, rotated_rim_rect_2.topleft)
 
     pygame.draw.line(screen,METALLIC, (shaft_end_pos_1[0]- shaft_width/2,
                              shaft_end_pos_1[1]-base_width/2 ), (shaft_base_pos_2[0]+shaft_width/2,shaft_base_pos_2[1]- shaft_length-base_width/2),20)
@@ -186,9 +190,7 @@ while running:
 
     # Blit the rotated box onto the screen
     screen.blit(rotated_box, rotated_box_rect.topleft)   
-    # Blit the rotated rim onto the screen
-    screen.blit(rotated_rim_1, rotated_rect_1.topleft)
-    screen.blit(rotated_rim_2, rotated_rect_2.topleft)
+
 
     # Calculate the angle difference between the two wheels
     angle_difference = abs(rim_angle_1 - rim_angle_2)
